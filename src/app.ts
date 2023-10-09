@@ -1,5 +1,4 @@
 import express from "express";
-import crypto from "crypto";
 import cors from "cors";
 import authRouter from "./routes/auth//auth";
 import proyectosRouter from "./routes//proyectos";
@@ -7,7 +6,7 @@ import tareasRouter from "./routes//tareas";
 import usuariosRouter from "./routes//usuarios";
 
 const app = express();
-const port = 8080;
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use(cors());
