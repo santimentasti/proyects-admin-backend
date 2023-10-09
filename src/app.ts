@@ -10,9 +10,6 @@ const port = 8080;
 
 app.use(express.json());
 app.use(cors());
-const generateRandomSecret = () => {
-  return crypto.randomBytes(32).toString("hex");
-};
 
 app.use("/auth", authRouter);
 app.use("/proyectos", proyectosRouter);
