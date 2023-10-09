@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import { Request, Response } from 'express';
+import { PrismaClient } from "@prisma/client";
+import { Request, Response } from "express";
 
 const prisma = new PrismaClient();
 
@@ -9,8 +9,8 @@ export const obtenerProyectos = async (req: Request, res: Response) => {
     const proyectos = await prisma.proyecto.findMany();
     res.json(proyectos);
   } catch (error) {
-    console.error('Error al obtener proyectos', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    console.error("Error al obtener proyectos", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
@@ -48,8 +48,8 @@ export const crearProyecto = async (req: Request, res: Response) => {
     });
     res.json(proyecto);
   } catch (error) {
-    console.error('Error al crear proyecto', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    console.error("Error al crear proyecto", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
@@ -64,8 +64,8 @@ export const actualizarProyecto = async (req: Request, res: Response) => {
     });
     res.json(proyecto);
   } catch (error) {
-    console.error('Error al actualizar proyecto', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    console.error("Error al actualizar proyecto", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
 
@@ -76,12 +76,59 @@ export const eliminarProyecto = async (req: Request, res: Response) => {
     await prisma.proyecto.delete({
       where: { id: Number(id) },
     });
-    res.json({ mensaje: 'Proyecto eliminado con éxito' });
+    res.json({ mensaje: "Proyecto eliminado con éxito" });
   } catch (error) {
-    console.error('Error al eliminar proyecto', error);
-    res.status(500).json({ mensaje: 'Error interno del servidor' });
+    console.error("Error al eliminar proyecto", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
   }
 };
+
+
+export const agregarColaborador = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { colaboradorId } = req.body;
+
+  try {
+    // Verifica si el proyecto existe
+    const proyecto = await prisma.proyecto.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!proyecto) {
+      return res.status(404).json({ mensaje: "Proyecto no encontrado" });
+    }
+
+    // Verifica si el colaborador ya está en la lista de colaboradores del proyecto
+    const colaboradorExistente = await prisma.colaborador.findFirst({
+      where: {
+        proyectoId: Number(id),
+        usuarioId: Number(colaboradorId),
+      },
+    });
+
+    if (colaboradorExistente) {
+      return res
+        .status(400)
+        .json({ mensaje: "El colaborador ya está en el proyecto" });
+    }
+
+    // Agrega al colaborador a la lista de colaboradores del proyecto
+    await prisma.colaborador.create({
+      data: {
+        proyectoId: Number(id),
+        usuarioId: Number(colaboradorId),
+      },
+    });
+
+    res.status(200).json({ mensaje: "Colaborador agregado con éxito" });
+  } catch (error) {
+    console.error("Error al agregar el colaborador", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+};
+
 
 export default {
   obtenerProyectos,
@@ -89,4 +136,5 @@ export default {
   crearProyecto,
   actualizarProyecto,
   eliminarProyecto,
+  agregarColaborador
 };
