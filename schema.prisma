@@ -15,6 +15,7 @@ model Usuario {
   password String
   proyectos Proyecto[]
   tareas    Tarea[]
+  colaboradores Colaborador[]
 }
 
 model Proyecto {
@@ -24,6 +25,7 @@ model Proyecto {
   usuarioId   Int
   usuario     Usuario  @relation(fields: [usuarioId], references: [id])
   tareas    Tarea[]
+  colaboradores Colaborador[]
 }
 
 model Tarea {
@@ -35,4 +37,12 @@ model Tarea {
   usuarioId   Int
   proyecto    Proyecto @relation(fields: [proyectoId], references: [id])
   usuario     Usuario  @relation(fields: [usuarioId], references: [id])
+}
+
+model Colaborador {
+  id         Int     @id @default(autoincrement())
+  usuarioId  Int
+  proyectoId Int
+  usuario    Usuario @relation(fields: [usuarioId], references: [id])
+  proyecto   Proyecto @relation(fields: [proyectoId], references: [id])
 }
