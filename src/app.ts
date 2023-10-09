@@ -1,5 +1,4 @@
 import express from "express";
-import session from "express-session";
 import crypto from "crypto";
 import cors from "cors";
 import authRouter from "./routes/auth//auth";
@@ -14,14 +13,6 @@ app.use(cors());
 const generateRandomSecret = () => {
   return crypto.randomBytes(32).toString("hex");
 };
-
-app.use(
-  session({
-    secret: generateRandomSecret(),
-    resave: false,
-    saveUninitialized: false,
-  })
-);
 
 app.use("/auth", authRouter);
 app.use("/proyectos", proyectosRouter);

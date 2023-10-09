@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../routes/auth/password-utils';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
+const secretKey = 'clave_secreta'; // Reemplaza con tu clave secreta real
 
 async function registrarUsuario(req: Request, res: Response, next: NextFunction) {
   const { username, password, nombre, apellido } = req.body;
@@ -19,7 +21,7 @@ async function registrarUsuario(req: Request, res: Response, next: NextFunction)
 
     // Crear el nuevo usuario
     const hashedPassword = await hashPassword(password);
-    await prisma.usuario.create({
+    const newUser = await prisma.usuario.create({
       data: {
         username,
         nombre,
@@ -28,7 +30,8 @@ async function registrarUsuario(req: Request, res: Response, next: NextFunction)
       },
     });
 
-    res.json({ message: 'Registro exitoso' });
+    const token = jwt.sign({ userId: newUser.id }, secretKey, { expiresIn: '1h' });
+    res.json({ message: 'Registro exitoso', token });
   } catch (error) {
     return next(error);
   } finally {

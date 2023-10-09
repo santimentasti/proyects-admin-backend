@@ -1,9 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { verifyPassword } from '../routes/auth/password-utils';
-
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
+const secretKey = 'clave_secreta'; // Reemplaza con tu clave secreta real
 
 async function iniciarSesion(req: Request, res: Response, next: NextFunction) {
   const { username, password } = req.body;
@@ -24,10 +25,9 @@ async function iniciarSesion(req: Request, res: Response, next: NextFunction) {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
-    // Iniciar sesión almacena el usuario en la sesión (req.session)
-    req.session.id = user.username;
-
-    res.json({ message: 'Inicio de sesión exitoso' });
+    // Generar un token JWT y enviarlo como respuesta
+    const token = jwt.sign({ userId: user.id }, secretKey, { expiresIn: '1h' });
+    res.json({ token, userId: user.id });
   } catch (error) {
     return next(error);
   } finally {
