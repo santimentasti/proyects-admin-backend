@@ -14,6 +14,27 @@ export const obtenerProyectos = async (req: Request, res: Response) => {
   }
 };
 
+export const obtenerProyectoPorId = async (req: Request, res: Response) => {
+  const { id } = req.params; // ID del proyecto que se pasa como parámetro en la URL
+
+  try {
+    const proyecto = await prisma.proyecto.findUnique({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    if (!proyecto) {
+      return res.status(404).json({ mensaje: "Proyecto no encontrado" });
+    }
+
+    res.json(proyecto);
+  } catch (error) {
+    console.error("Error al obtener el proyecto", error);
+    res.status(500).json({ mensaje: "Error interno del servidor" });
+  }
+};
+
 // Crear un nuevo proyecto
 export const crearProyecto = async (req: Request, res: Response) => {
   const { nombre, descripcion, usuarioId } = req.body;
@@ -64,6 +85,7 @@ export const eliminarProyecto = async (req: Request, res: Response) => {
 
 export default {
   obtenerProyectos,
+  obtenerProyectoPorId,
   crearProyecto,
   actualizarProyecto,
   eliminarProyecto,
