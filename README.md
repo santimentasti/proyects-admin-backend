@@ -1,4 +1,4 @@
-# Configuracion:
+# Configuración:
 
 Crear en la raiz un archivo bajo el nombre .env
 
