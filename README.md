@@ -1,6 +1,3 @@
-# proyects-admin-backend
-backend de proyects-admin. 
-
 # Configuracion:
 
 Crear en la raiz un archivo bajo el nombre .env
